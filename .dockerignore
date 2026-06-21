@@ -1,0 +1,13 @@
+target
+.idea
+.git
+.github
+.mvn
+.settings
+.smarttomcat
+node_modules
+*.log
+*.tmp
+/.env
+src/main/resources/application-*.properties
+!src/main/resources/application-dev.properties.template

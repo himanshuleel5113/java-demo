@@ -12,12 +12,17 @@ import jakarta.servlet.http.HttpSession;
 import lombok.extern.java.Log;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.math.BigDecimal;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.logging.Level;
 
 @Log
 @WebServlet("/home")
 public class Home extends HttpServlet {
+    @Serial
     private static final long serialVersionUID = 1L;
     private final BankService bankService = new BankServiceImpl();
 
@@ -29,7 +34,7 @@ public class Home extends HttpServlet {
 
         if (session == null || session.getAttribute("accountNumber") == null) {
             log.warning("Unauthorized access attempt to /home");
-            response.sendRedirect(request.getContextPath() + "/Login.jsp?error=Please login first");
+            response.sendRedirect(request.getContextPath() + "/Login.jsp?error=" + encodeParam("Please login first"));
             return;
         }
 
@@ -48,8 +53,7 @@ public class Home extends HttpServlet {
             request.getRequestDispatcher("/WEB-INF/views/Home.jsp").forward(request, response);
 
         } catch (Exception e) {
-            log.severe("Error loading dashboard: " + e.getMessage());
-            e.printStackTrace();
+            log.log(Level.SEVERE, "Error loading dashboard", e);
             response.sendRedirect(request.getContextPath() + "/GenericError.html");
         }
     }
@@ -60,7 +64,7 @@ public class Home extends HttpServlet {
 
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("accountNumber") == null) {
-            response.sendRedirect(request.getContextPath() + "/Login.jsp");
+            response.sendRedirect(request.getContextPath() + "/Login.jsp?error=" + encodeParam("Please login first"));
             return;
         }
 
@@ -78,9 +82,9 @@ public class Home extends HttpServlet {
             if (depositAmtStr != null && !depositAmtStr.trim().isEmpty()) {
                 BigDecimal amount = new BigDecimal(depositAmtStr);
                 boolean status = bankService.processDeposit(accountNumber, amount);
-                if(status) {
+                if (status) {
                     log.info("Deposit successful for account: " + accountNumber);
-                    redirectUrl += "?msg=Deposit+successful";
+                    redirectUrl += "?msg=" + encodeParam("Deposit successful");
 
                     // Refresh balance
                     BigDecimal newBalance = bankService.getBalance(accountNumber);
@@ -90,7 +94,7 @@ public class Home extends HttpServlet {
                     List<Transaction> transactions = bankService.getTransactionHistory(accountNumber);
                     session.setAttribute("transactionDetailsList", transactions);
                 } else {
-                    redirectUrl += "?error=Deposit+failed";
+                    redirectUrl += "?error=" + encodeParam("Deposit failed");
                 }
             }
             // --- ACTION 2: WITHDRAW ---
@@ -99,8 +103,8 @@ public class Home extends HttpServlet {
                 String result = bankService.withdraw(accountNumber, amount);
                 log.info("Withdrawal result for account " + accountNumber + ": " + result);
 
-                if("SUCCESS".equals(result)) {
-                    redirectUrl += "?msg=Withdrawal+successful";
+                if ("SUCCESS".equals(result)) {
+                    redirectUrl += "?msg=" + encodeParam("Withdrawal successful");
 
                     // Refresh balance
                     BigDecimal newBalance = bankService.getBalance(accountNumber);
@@ -110,7 +114,7 @@ public class Home extends HttpServlet {
                     List<Transaction> transactions = bankService.getTransactionHistory(accountNumber);
                     session.setAttribute("transactionDetailsList", transactions);
                 } else {
-                    redirectUrl += "?error=" + result.replace(" ", "+");
+                    redirectUrl += "?error=" + encodeParam(result);
                 }
             }
             // --- ACTION 3: TRANSFER ---
@@ -119,8 +123,8 @@ public class Home extends HttpServlet {
                 BigDecimal amount = new BigDecimal(toAmountStr);
                 ServiceResponse serviceResponse = bankService.processTransfer(accountNumber, recipientAcc, amount);
 
-                if(serviceResponse.success()) {
-                    redirectUrl += "?msg=Transfer+successful";
+                if (serviceResponse.success()) {
+                    redirectUrl += "?msg=" + encodeParam("Transfer successful");
 
                     // Refresh balance
                     BigDecimal newBalance = bankService.getBalance(accountNumber);
@@ -130,19 +134,22 @@ public class Home extends HttpServlet {
                     List<Transaction> transactions = bankService.getTransactionHistory(accountNumber);
                     session.setAttribute("transactionDetailsList", transactions);
                 } else {
-                    redirectUrl += "?error=" + serviceResponse.message().replace(" ", "+");
+                    redirectUrl += "?error=" + encodeParam(serviceResponse.message());
                 }
             }
 
         } catch (NumberFormatException e) {
-            log.severe("Number format error: " + e.getMessage());
-            redirectUrl += "?error=Invalid+Amount+Format";
+            log.log(Level.WARNING, "Number format error", e);
+            redirectUrl += "?error=" + encodeParam("Invalid amount format");
         } catch (Exception e) {
-            log.severe("Transaction Error: " + e.getMessage());
-            e.printStackTrace();
-            redirectUrl += "?error=Transaction+could+not+be+completed";
+            log.log(Level.SEVERE, "Transaction Error", e);
+            redirectUrl += "?error=" + encodeParam("Transaction could not be completed");
         }
 
         response.sendRedirect(redirectUrl);
+    }
+
+    private String encodeParam(String value) {
+        return URLEncoder.encode(value, StandardCharsets.UTF_8);
     }
 }

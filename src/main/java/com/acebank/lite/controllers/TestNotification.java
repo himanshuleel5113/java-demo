@@ -14,11 +14,11 @@ import java.io.IOException;
 @Log
 @WebServlet("/test-notification")
 public class TestNotification extends HttpServlet {
-    
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("accountNumber") == null) {
             response.sendRedirect("Login.jsp");
@@ -31,7 +31,7 @@ public class TestNotification extends HttpServlet {
         NotificationService.addNotification(accountNo, "Welcome to AceBank! Your account is now active.", "INFO");
         NotificationService.addNotification(accountNo, "Your account balance has been updated.", "DEPOSIT");
         NotificationService.addNotification(accountNo, "Security alert: New login detected", "SECURITY");
-        
+
         response.setContentType("text/html");
         response.getWriter().println("<html><body style='font-family: Arial; padding: 20px;'>");
         response.getWriter().println("<h2 style='color: green;'>✓ Test notifications added!</h2>");

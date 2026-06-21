@@ -1,4 +1,5 @@
 # Email Configuration
+app.environment=dev
 mail.default.address=
 mail.google.app.password=
 
