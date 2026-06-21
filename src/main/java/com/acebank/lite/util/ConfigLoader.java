@@ -12,13 +12,14 @@ public class ConfigLoader {
         try (InputStream is = ConfigLoader.class.getClassLoader()
                 .getResourceAsStream(ConfigKeys.DEV_PROPERTIES)) {
 
-            if (is == null) {
-                throw new RuntimeException("Could not find " + ConfigKeys.DEV_PROPERTIES);
+            if (is != null) {
+                properties.load(is);
+            } else {
+                System.out.println("Could not find " + ConfigKeys.DEV_PROPERTIES + ", relying entirely on Environment Variables.");
             }
-            properties.load(is);
 
         } catch (IOException e) {
-            throw new RuntimeException("Failed to load configuration", e);
+            System.err.println("Failed to load configuration file: " + e.getMessage());
         }
     }
 
