@@ -23,7 +23,7 @@ RUN apt-get update \
 
 # Install Tomcat 11 (specific version pinned)
 ARG TOMCAT_VERSION=11.0.21
-RUN curl -fsSL https://dlcdn.apache.org/tomcat/tomcat-11/v${TOMCAT_VERSION}/bin/apache-tomcat-${TOMCAT_VERSION}.tar.gz -o /tmp/tomcat.tar.gz \
+RUN curl -fsSL https://archive.apache.org/dist/tomcat/tomcat-11/v${TOMCAT_VERSION}/bin/apache-tomcat-${TOMCAT_VERSION}.tar.gz -o /tmp/tomcat.tar.gz \
     && mkdir -p /opt \
     && tar -xzf /tmp/tomcat.tar.gz -C /opt \
     && mv /opt/apache-tomcat-${TOMCAT_VERSION} ${CATALINA_HOME} \
