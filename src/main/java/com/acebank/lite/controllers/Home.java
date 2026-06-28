@@ -9,7 +9,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import lombok.extern.java.Log;
+import java.util.logging.Logger;
 
 import java.io.IOException;
 import java.io.Serial;
@@ -19,9 +19,10 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.logging.Level;
 
-@Log
+
 @WebServlet("/home")
 public class Home extends HttpServlet {
+    private static final Logger log = Logger.getLogger("Home");
     @Serial
     private static final long serialVersionUID = 1L;
     private final BankService bankService = new BankServiceImpl();
@@ -54,7 +55,7 @@ public class Home extends HttpServlet {
 
         } catch (Exception e) {
             log.log(Level.SEVERE, "Error loading dashboard", e);
-            response.sendRedirect(request.getContextPath() + "/GenericError.html");
+            response.sendRedirect(request.getContextPath() + "/error.jsp");
         }
     }
 
@@ -121,7 +122,7 @@ public class Home extends HttpServlet {
             else if (toAccountStr != null && toAmountStr != null && !toAccountStr.trim().isEmpty()) {
                 int recipientAcc = Integer.parseInt(toAccountStr);
                 BigDecimal amount = new BigDecimal(toAmountStr);
-                ServiceResponse serviceResponse = bankService.processTransfer(accountNumber, recipientAcc, amount);
+                ServiceResponse<Void> serviceResponse = bankService.processTransfer(accountNumber, recipientAcc, amount);
 
                 if (serviceResponse.success()) {
                     redirectUrl += "?msg=" + encodeParam("Transfer successful");

@@ -1,31 +1,28 @@
 package com.acebank.lite.controllers;
 
-import com.acebank.lite.dao.BankUserDao;
-import com.acebank.lite.dao.BankUserDaoImpl;
+import com.acebank.lite.dao.LoanDao;
+import com.acebank.lite.dao.LoanDaoImpl;
 import com.acebank.lite.service.BankService;
 import com.acebank.lite.service.BankServiceImpl;
 import com.acebank.lite.service.NotificationService;
-import com.acebank.lite.util.QueryLoader;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import lombok.extern.java.Log;
+import java.util.logging.Logger;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 
-@Log
+
 @WebServlet("/Loan")
 public class Loan extends HttpServlet {
+    private static final Logger log = Logger.getLogger("Loan");
     private static final long serialVersionUID = 1L;
     private final BankService bankService = new BankServiceImpl();
-    private final BankUserDao userDao = new BankUserDaoImpl();
+    private final LoanDao loanDao = new LoanDaoImpl();
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -65,7 +62,7 @@ public class Loan extends HttpServlet {
 
         try {
             // Insert loan application into database
-            boolean success = applyForLoan(accountNumber, loanType, amount, tenure, purpose);
+            boolean success = loanDao.applyForLoan(accountNumber, loanType, amount, tenure, purpose);
 
             if (success) {
                 // Send confirmation email
@@ -83,30 +80,6 @@ public class Loan extends HttpServlet {
         } catch (Exception e) {
             log.severe("Loan application error: " + e.getMessage());
             response.sendRedirect("Loan.jsp?error=System+error.+Please+try+again");
-        }
-    }
-
-    private boolean applyForLoan(int accountNo, String loanType, BigDecimal amount, int tenure, String purpose) {
-        String sql = QueryLoader.get("loan.apply");
-
-        try (Connection conn = java.sql.DriverManager.getConnection(
-                com.acebank.lite.util.ConfigLoader.getProperty(com.acebank.lite.util.ConfigKeys.DB_URL),
-                com.acebank.lite.util.ConfigLoader.getProperty(com.acebank.lite.util.ConfigKeys.DB_USER),
-                com.acebank.lite.util.ConfigLoader.getProperty(com.acebank.lite.util.ConfigKeys.DB_PWD));
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-            pstmt.setInt(1, accountNo);
-            pstmt.setString(2, loanType);
-            pstmt.setBigDecimal(3, amount);
-            pstmt.setInt(4, tenure);
-            pstmt.setString(5, purpose);
-
-            int rows = pstmt.executeUpdate();
-            return rows > 0;
-
-        } catch (SQLException e) {
-            log.severe("Error applying for loan: " + e.getMessage());
-            return false;
         }
     }
 }

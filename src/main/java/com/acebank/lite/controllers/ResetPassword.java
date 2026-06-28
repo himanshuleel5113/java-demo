@@ -1,7 +1,7 @@
 package com.acebank.lite.controllers;
 
-import com.acebank.lite.dao.BankUserDao;
-import com.acebank.lite.dao.BankUserDaoImpl;
+import com.acebank.lite.dao.UserDao;
+import com.acebank.lite.dao.UserDaoImpl;
 import com.acebank.lite.service.NotificationService;
 import com.acebank.lite.service.OTPService;
 import com.acebank.lite.util.PasswordUtil;
@@ -11,16 +11,17 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import lombok.extern.java.Log;
+import java.util.logging.Logger;
 
 import java.io.IOException;
 import java.sql.SQLException;
 
-@Log
+
 @WebServlet("/ResetPassword")
 public class ResetPassword extends HttpServlet {
+    private static final Logger log = Logger.getLogger("ResetPassword");
     private static final long serialVersionUID = 1L;
-    private final BankUserDao userDao = new BankUserDaoImpl();
+    private final UserDao userDao = new UserDaoImpl();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -129,7 +130,7 @@ public class ResetPassword extends HttpServlet {
                 response.sendRedirect("ResetPassword.jsp?error=Failed+to+reset+password");
             }
 
-        } catch (SQLException e) {
+        } catch (Exception e) {
             log.severe("Error resetting password: " + e.getMessage());
             response.sendRedirect("ResetPassword.jsp?error=System+error.+Please+try+again");
         }

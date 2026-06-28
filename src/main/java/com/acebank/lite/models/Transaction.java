@@ -10,6 +10,7 @@ public record Transaction(
         BigDecimal amount,
         String txType,
         String remark,
+        String status,
+        String referenceNo,
         LocalDateTime createdAt
-) {
-}
+) {}

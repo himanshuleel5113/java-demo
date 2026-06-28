@@ -217,7 +217,8 @@
     <% } %>
 
     <!-- Balance First -->
-    <section class="rounded-2xl bg-gradient-to-r from-blue-900 to-slate-900 px-6 py-6 text-white shadow-md">
+    <section class="glass-panel border-0 bg-gradient-to-r from-primary to-blue-900 px-8 py-8 text-white shadow-xl relative overflow-hidden rounded-3xl">
+        <div class="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl transform translate-x-1/3 -translate-y-1/3 pointer-events-none animate-pulse-slow"></div>
         <div class="grid gap-6 lg:grid-cols-[1.5fr_1fr]">
             <div class="space-y-4">
                 <div class="flex flex-wrap items-center gap-2">
@@ -229,8 +230,8 @@
                     </span>
                 </div>
                 <div>
-                    <p class="text-sm text-blue-100">Welcome back</p>
-                    <h1 class="text-3xl font-bold"><%= customerName %></h1>
+                    <p class="text-sm text-blue-100/80">Welcome back</p>
+                    <h1 class="text-4xl font-brand font-bold"><%= customerName %></h1>
                     <p class="mt-2 text-sm text-slate-200">Your primary account is ready for secure transactions.</p>
                 </div>
                 <div class="grid gap-3 sm:grid-cols-3">
@@ -251,8 +252,8 @@
             </div>
 
             <div class="rounded-2xl border border-white/15 bg-white/10 p-5">
-                <p class="text-xs uppercase tracking-[0.18em] text-blue-100">Available Balance</p>
-                <p class="mt-2 text-4xl font-bold">₹ <%= balance != null ? String.format("%,.2f", balance) : "0.00" %></p>
+                <p class="text-xs uppercase tracking-[0.18em] text-blue-100/80 font-medium">Available Balance</p>
+                <p class="mt-2 text-5xl font-brand font-bold">₹ <%= balance != null ? String.format("%,.2f", balance) : "0.00" %></p>
                 <p class="mt-2 text-sm text-blue-100"><%= healthCopy %></p>
                 <div class="mt-4 grid grid-cols-2 gap-3">
                     <div class="rounded-lg bg-white/10 p-3">
@@ -271,11 +272,11 @@
     </section>
 
     <!-- Primary Actions -->
-    <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+    <section class="glass-panel p-8 shadow-lg rounded-3xl mt-6">
         <div class="flex flex-wrap items-center justify-between gap-2">
             <div>
-                <p class="text-sm font-semibold uppercase tracking-[0.18em] text-blue-600">Actions</p>
-                <h2 class="text-2xl font-bold text-slate-900">Quick Banking Actions</h2>
+                <p class="text-sm font-semibold uppercase tracking-[0.18em] text-blue-600 dark:text-blue-400">Actions</p>
+                <h2 class="text-2xl font-brand font-bold text-slate-900 dark:text-white mt-1">Quick Banking Actions</h2>
             </div>
         </div>
 
@@ -300,12 +301,12 @@
     </section>
 
     <!-- Details / Analytics -->
-    <section class="grid gap-4 lg:grid-cols-3">
-        <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm lg:col-span-2">
+    <section class="grid gap-6 lg:grid-cols-3 mt-6">
+        <div class="glass-panel p-8 shadow-lg rounded-3xl lg:col-span-2">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm font-semibold uppercase tracking-[0.16em] text-slate-500">Income vs Spending</p>
-                    <h3 class="text-xl font-bold text-slate-900">Trend Overview</h3>
+                    <p class="text-sm font-semibold uppercase tracking-[0.16em] text-slate-500 dark:text-slate-400">Income vs Spending</p>
+                    <h3 class="text-2xl font-brand font-bold text-slate-900 dark:text-white mt-1">Trend Overview</h3>
                 </div>
                 <span class="text-xs text-slate-500">Recent 7 activities</span>
             </div>
@@ -350,9 +351,9 @@
             </div>
         </div>
 
-        <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <p class="text-sm font-semibold uppercase tracking-[0.16em] text-slate-500">Details</p>
-            <h3 class="text-xl font-bold text-slate-900">Account Snapshot</h3>
+        <div class="glass-panel p-8 shadow-lg rounded-3xl">
+            <p class="text-sm font-semibold uppercase tracking-[0.16em] text-slate-500 dark:text-slate-400">Details</p>
+            <h3 class="text-2xl font-brand font-bold text-slate-900 dark:text-white mt-1">Account Snapshot</h3>
             <div class="mt-4 space-y-3">
                 <div class="rounded-lg bg-slate-50 p-3">
                     <p class="text-xs text-slate-500">Latest Activity</p>
@@ -372,12 +373,12 @@
     </section>
 
     <!-- Transactions -->
-    <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+    <section class="glass-panel p-8 shadow-lg rounded-3xl mt-6 mb-8">
         <div class="flex flex-col gap-4 border-b border-slate-200 pb-4 lg:flex-row lg:items-end lg:justify-between">
             <div>
-                <p class="text-sm font-semibold uppercase tracking-[0.16em] text-blue-600">Transactions</p>
-                <h2 class="text-2xl font-bold text-slate-900">Recent Account Activity</h2>
-                <p class="text-sm text-slate-500">Use search and filters to locate specific entries quickly.</p>
+                <p class="text-sm font-semibold uppercase tracking-[0.16em] text-blue-600 dark:text-blue-400">Transactions</p>
+                <h2 class="text-2xl font-brand font-bold text-slate-900 dark:text-white mt-1">Recent Account Activity</h2>
+                <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Use search and filters to locate specific entries quickly.</p>
             </div>
 
             <div class="grid gap-2 sm:grid-cols-2 lg:grid-cols-4 lg:min-w-[760px]">

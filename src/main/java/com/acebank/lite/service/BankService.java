@@ -5,6 +5,7 @@ import com.acebank.lite.models.ServiceResponse;
 import com.acebank.lite.models.Transaction;
 import com.acebank.lite.models.User;
 import com.acebank.lite.models.AccountRecoveryDTO;
+import com.acebank.lite.models.AdminDashboardStats;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
@@ -22,15 +23,29 @@ public interface BankService {
 
     List<Transaction> getTransactionHistory(int accountNo);
 
-    ServiceResponse processTransfer(int fromAcc, int toAcc, BigDecimal amount);
+    ServiceResponse<Void> processTransfer(int fromAcc, int toAcc, BigDecimal amount);
 
     String withdraw(int accountNo, BigDecimal amount);
 
     Optional<LoginResult> registerUser(User user);
+
+    boolean isEmailRegistered(String email);
+
+    boolean isAadhaarRegistered(String aadhaarNo);
 
     boolean recoverAccount(String email);
 
     boolean applyForLoan(String firstName, String email, String loanType);
 
     Optional<AccountRecoveryDTO> getRecoveryDetails(String email) throws SQLException;
+
+    AdminDashboardStats getAdminStats();
+
+    java.util.List<com.acebank.lite.models.AdminCustomerView> listCustomers();
+
+    java.util.List<com.acebank.lite.models.Transaction> getRecentTransactions(int limit);
+
+    java.util.List<com.acebank.lite.models.AdminLoanView> listLoanApplications();
+
+    boolean reviewLoan(int loanId, String decision, int reviewerAccountNo);
 }

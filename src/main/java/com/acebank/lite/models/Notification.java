@@ -7,11 +7,13 @@ public class Notification {
     private int id;
     private int accountNo;
     private String message;
-    private String type; // INFO, SUCCESS, WARNING, DANGER
+    private String type;
     private boolean isRead;
-    private LocalDateTime createdAt;
     private String icon;
     private String actionLink;
+    private LocalDateTime createdAt;
+
+    public Notification() {}
 
     public Notification(int accountNo, String message, String type) {
         this.accountNo = accountNo;
@@ -23,6 +25,7 @@ public class Notification {
     }
 
     private void setIconAndLink() {
+        if (type == null) type = "INFO";
         switch (type) {
             case "DEPOSIT":
                 this.icon = "fa-arrow-down text-green-500";
@@ -50,7 +53,6 @@ public class Notification {
         }
     }
 
-    // Getters and Setters
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
     public int getAccountNo() { return accountNo; }
@@ -58,15 +60,18 @@ public class Notification {
     public String getMessage() { return message; }
     public void setMessage(String message) { this.message = message; }
     public String getType() { return type; }
-    public void setType(String type) { this.type = type; }
+    public void setType(String type) { this.type = type; setIconAndLink(); }
     public boolean isRead() { return isRead; }
     public void setRead(boolean read) { isRead = read; }
+    public String getIcon() { return icon; }
+    public void setIcon(String icon) { this.icon = icon; }
+    public String getActionLink() { return actionLink; }
+    public void setActionLink(String actionLink) { this.actionLink = actionLink; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
-    public String getIcon() { return icon; }
-    public String getActionLink() { return actionLink; }
     
     public String getFormattedTime() {
+        if (createdAt == null) return "";
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMM, hh:mm a");
         return createdAt.format(formatter);
     }

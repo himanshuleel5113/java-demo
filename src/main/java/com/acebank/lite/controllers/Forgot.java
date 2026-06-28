@@ -11,14 +11,15 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import lombok.extern.java.Log;
+import java.util.logging.Logger;
 
 import java.io.IOException;
 import java.util.Optional;
 
-@Log
+
 @WebServlet("/Forgot")
 public class Forgot extends HttpServlet {
+    private static final Logger log = Logger.getLogger("Forgot");
     private static final long serialVersionUID = 1L;
     private final BankService bankService = new BankServiceImpl();
 
@@ -78,6 +79,14 @@ public class Forgot extends HttpServlet {
                 // Generate 6-digit OTP
                 String otp = OTPService.generateOTP(details.accountNo(), email);
 
+                // Guard: if the OTP could not be persisted, generateOTP returns null.
+                // Never email the literal word "null" — fail cleanly instead.
+                if (otp == null) {
+                    log.severe("OTP generation failed (not saved) for email: " + email);
+                    response.sendRedirect("ForgotPassword.jsp?error=Could+not+generate+OTP.+Please+try+again+later.");
+                    return;
+                }
+
                 // Store email in session
                 HttpSession session = request.getSession();
                 session.setAttribute("resetEmail", email);
@@ -114,7 +123,7 @@ public class Forgot extends HttpServlet {
                 }
             } else {
                 log.warning("No account found for email: " + email);
-                response.sendRedirect("ForgotFail.jsp");
+                response.sendRedirect("ForgotPassword.jsp?error=No+account+found+with+that+email+address");
             }
         } catch (Exception e) {
             log.severe("Error in forgot password: " + e.getMessage());

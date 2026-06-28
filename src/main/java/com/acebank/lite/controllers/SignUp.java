@@ -10,16 +10,17 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import lombok.extern.java.Log;
+import java.util.logging.Logger;
 
 import java.io.IOException;
 import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Optional;
 
-@Log
+
 @WebServlet("/signup")  // Keep this as lowercase - we'll match form to this
 public class SignUp extends HttpServlet {
+    private static final Logger log = Logger.getLogger("SignUp");
     @Serial
     private static final long serialVersionUID = 1L;
 
@@ -57,17 +58,25 @@ public class SignUp extends HttpServlet {
             return;
         }
 
+        String normalizedEmail = email.trim().toLowerCase();
+        String normalizedAadhaar = aadharStr.trim();
+
         try {
-            // 2. Create the User object
-            User newUser = new User(
-                    null,
-                    firstName.trim(),
-                    lastName.trim(),
-                    aadharStr.trim(),
-                    email.trim().toLowerCase(),
-                    password, // Will be hashed in service layer
-                    null
-            );
+            // Give the user an ACCURATE reason instead of a blanket "email may already exist".
+            if (bankService.isEmailRegistered(normalizedEmail)) {
+                log.warning("SignUp failed: email already registered - " + normalizedEmail);
+                response.sendRedirect("SignUp.jsp?error=This+email+is+already+registered.+Please+log+in+instead.");
+                return;
+            }
+            if (bankService.isAadhaarRegistered(normalizedAadhaar)) {
+                log.warning("SignUp failed: aadhaar already registered");
+                response.sendRedirect("SignUp.jsp?error=This+Aadhaar+number+is+already+registered.");
+                return;
+            }
+
+            // Role must be a valid USERS.ROLE enum value ('CUSTOMER' | 'ADMIN'); "USER" was invalid
+            // and made every insert fail under MySQL strict mode.
+            User newUser = new User(null, firstName.trim(), lastName.trim(), normalizedAadhaar, normalizedEmail, password, "CUSTOMER", null, null, null, null, "ACTIVE", 0, null, false, null, null, java.time.LocalDateTime.now(), java.time.LocalDateTime.now());
 
             // 3. Call Service to handle logic
             Optional<LoginResult> resultOpt = bankService.registerUser(newUser);
@@ -88,12 +97,12 @@ public class SignUp extends HttpServlet {
                 response.sendRedirect(request.getContextPath() + "/home");
             } else {
                 log.warning("SignUp failed for email: " + email);
-                response.sendRedirect("SignUp.jsp?error=Registration+failed.+Email+may+already+exist");
+                response.sendRedirect("SignUp.jsp?error=Registration+could+not+be+completed.+Please+try+again.");
             }
 
         } catch (Exception e) {
             log.severe("SignUp Servlet Error: " + e.getMessage());
-            response.sendRedirect("GenericError.html");
+            response.sendRedirect("SignUp.jsp?error=System+error.+Please+try+again.");
         }
     }
 

@@ -1,87 +1,83 @@
 package com.acebank.lite.service;
 
+import com.acebank.lite.dao.NotificationDao;
+import com.acebank.lite.dao.NotificationDaoImpl;
 import com.acebank.lite.models.Notification;
 import lombok.extern.java.Log;
 
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.List;
+import java.util.logging.Logger;
 
-@Log
 public class NotificationService {
 
-    private static final Map<Integer, List<Notification>> notificationsMap = new ConcurrentHashMap<>();
-    private static int notificationCounter = 0;
+    private static final Logger log = Logger.getLogger(NotificationService.class.getName());
+
+    private static final NotificationDao notificationDao = new NotificationDaoImpl();
 
     public static void addNotification(int accountNo, String message, String type) {
+        // Simple logic for icon/link
+        String icon = "fa-info-circle text-gray-500";
+        String actionLink = "#";
+        if (type == null) type = "INFO";
+        switch (type) {
+            case "DEPOSIT":
+                icon = "fa-arrow-down text-green-500";
+                actionLink = "Statement.jsp";
+                break;
+            case "WITHDRAWAL":
+                icon = "fa-arrow-up text-red-500";
+                actionLink = "Statement.jsp";
+                break;
+            case "TRANSFER":
+                icon = "fa-exchange-alt text-blue-500";
+                actionLink = "Statement.jsp";
+                break;
+            case "LOAN":
+                icon = "fa-hand-holding-usd text-yellow-500";
+                actionLink = "Loan.jsp";
+                break;
+            case "SECURITY":
+                icon = "fa-shield-alt text-purple-500";
+                actionLink = "ChangePassword.jsp";
+                break;
+        }
+
         try {
-            Notification notification = new Notification(accountNo, message, type);
-            notification.setId(++notificationCounter);
-
-            notificationsMap.computeIfAbsent(accountNo, k -> new CopyOnWriteArrayList<>()).add(0, notification);
-
-            // Keep only last 20 notifications
-            List<Notification> userNotifications = notificationsMap.get(accountNo);
-            if (userNotifications.size() > 20) {
-                userNotifications.remove(userNotifications.size() - 1);
+            boolean success = notificationDao.createNotification(accountNo, message, type, icon, actionLink);
+            if (success) {
+                log.info("✅ NOTIFICATION ADDED for account " + accountNo + ": " + message + " (Type: " + type + ")");
+            } else {
+                log.warning("Failed to add notification for account " + accountNo);
             }
-
-            log.info("✅ NOTIFICATION ADDED for account " + accountNo + ": " + message + " (Type: " + type + ")");
-            log.info("Total notifications for account " + accountNo + ": " + userNotifications.size());
         } catch (Exception e) {
             log.severe("Error adding notification: " + e.getMessage());
         }
     }
 
     public static List<Notification> getNotifications(int accountNo) {
-        List<Notification> notifications = notificationsMap.get(accountNo);
-        if (notifications == null) {
-            log.info("No notifications found for account " + accountNo);
-            return new ArrayList<>();
-        }
-        log.info("Retrieved " + notifications.size() + " notifications for account " + accountNo);
-        return new ArrayList<>(notifications);
+        return notificationDao.getLatestNotifications(accountNo, 50); // Get latest 50
     }
 
     public static List<Notification> getUnreadNotifications(int accountNo) {
-        List<Notification> unread = new ArrayList<>();
+        List<Notification> unread = new java.util.ArrayList<>();
         List<Notification> all = getNotifications(accountNo);
         for (Notification n : all) {
             if (!n.isRead()) {
                 unread.add(n);
             }
         }
-        log.info("Unread notifications for account " + accountNo + ": " + unread.size());
         return unread;
     }
 
     public static int getUnreadCount(int accountNo) {
-        int count = getUnreadNotifications(accountNo).size();
-        log.info("Unread count for account " + accountNo + ": " + count);
-        return count;
+        return notificationDao.getUnreadCount(accountNo);
     }
 
     public static void markAsRead(int accountNo, int notificationId) {
-        List<Notification> notifications = getNotifications(accountNo);
-        for (Notification n : notifications) {
-            if (n.getId() == notificationId) {
-                n.setRead(true);
-                log.info("Marked notification " + notificationId + " as read for account " + accountNo);
-                break;
-            }
-        }
+        notificationDao.markAsRead(notificationId, accountNo);
     }
 
     public static void markAllAsRead(int accountNo) {
-        List<Notification> notifications = getNotifications(accountNo);
-        for (Notification n : notifications) {
-            n.setRead(true);
-        }
-        log.info("Marked all notifications as read for account " + accountNo);
-    }
-
-    public static void clearAll(int accountNo) {
-        notificationsMap.remove(accountNo);
-        log.info("Cleared all notifications for account " + accountNo);
+        notificationDao.markAllAsRead(accountNo);
     }
 }

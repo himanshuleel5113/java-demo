@@ -3,13 +3,14 @@ package com.acebank.lite.util;
 import jakarta.mail.*;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
-import lombok.extern.java.Log;
 
 import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
+import java.util.logging.Logger;
 
-@Log
 public class MailUtil {
+
+    private static final Logger log = Logger.getLogger(MailUtil.class.getName());
 
     public static void sendMailAsync(String recipient, String subject, String body) {
         CompletableFuture.runAsync(() -> {

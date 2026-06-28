@@ -12,104 +12,120 @@
 %>
 <jsp:include page="/includes/header.jsp" />
 
-<div style="max-width: 42rem; margin: 0 auto;">
+<div class="max-w-4xl mx-auto px-4 py-8 page-enter">
     <!-- Page Header -->
-    <div style="margin-bottom: 1.5rem;">
-        <h1 style="font-size: 1.5rem; font-weight: bold;">Fund Transfer</h1>
-        <p style="color: #6b7280;">Transfer money to other bank accounts</p>
-    </div>
-
-    <!-- Balance Card -->
-    <div style="background: linear-gradient(135deg, #2563eb, #1e40af); border-radius: 0.75rem; padding: 1.5rem; margin-bottom: 1.5rem; color: white;">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <div>
-                <p style="color: #bfdbfe; font-size: 0.875rem;">Available Balance</p>
-                <p style="font-size: 1.875rem; font-weight: bold;">₹ <%= balance != null ? String.format("%,.2f", balance) : "0.00" %></p>
-            </div>
-            <i class="fas fa-exchange-alt" style="font-size: 2.25rem; opacity: 0.5;"></i>
+    <div class="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+            <h1 class="text-3xl font-brand font-bold text-slate-900 dark:text-white">Fund Transfer</h1>
+            <p class="text-slate-500 dark:text-slate-400 mt-1">Send money securely to any bank account</p>
+        </div>
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 font-semibold border border-blue-200 dark:border-blue-800/30">
+            <i class="fas fa-wallet text-sm"></i> ₹ <%= balance != null ? String.format("%,.2f", balance) : "0.00" %> Available
         </div>
     </div>
 
-    <div class="bg-white" style="border-radius: 0.75rem; padding: 2rem; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);">
-        <!-- Quick Beneficiaries -->
-        <div style="margin-bottom: 1.5rem;">
-            <label style="display: block; font-size: 0.875rem; font-weight: 500; margin-bottom: 0.75rem;">Quick Beneficiaries</label>
-            <div style="display: flex; gap: 0.75rem; overflow-x: auto; padding-bottom: 0.5rem;">
-                <div style="flex-shrink: 0; width: 4rem; text-align: center;">
-                    <div style="width: 3rem; height: 3rem; background: #dbeafe; border-radius: 9999px; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.25rem;">
-                        <i class="fas fa-user" style="color: #2563eb;"></i>
+    <div class="glass-panel rounded-3xl p-8 shadow-xl relative overflow-hidden">
+        <!-- Background accents -->
+        <div class="absolute top-0 right-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl transform translate-x-1/3 -translate-y-1/3 pointer-events-none"></div>
+        <div class="absolute bottom-0 left-0 w-64 h-64 bg-indigo-500/5 rounded-full blur-3xl transform -translate-x-1/3 translate-y-1/3 pointer-events-none"></div>
+        
+        <div class="relative z-10 grid lg:grid-cols-5 gap-12">
+            
+            <!-- Left side: Quick Beneficiaries & Info -->
+            <div class="lg:col-span-2 space-y-8">
+                <div>
+                    <h3 class="text-sm font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-4">Quick Send</h3>
+                    <div class="grid grid-cols-4 gap-4">
+                        <div class="flex flex-col items-center gap-2 cursor-pointer group">
+                            <div class="w-12 h-12 rounded-2xl bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center text-xl shadow-sm border border-blue-200 dark:border-blue-800/30 group-hover:-translate-y-1 transition-transform">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <span class="text-xs font-medium text-slate-600 dark:text-slate-300">John</span>
+                        </div>
+                        <div class="flex flex-col items-center gap-2 cursor-pointer group">
+                            <div class="w-12 h-12 rounded-2xl bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xl shadow-sm border border-emerald-200 dark:border-emerald-800/30 group-hover:-translate-y-1 transition-transform">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <span class="text-xs font-medium text-slate-600 dark:text-slate-300">Priya</span>
+                        </div>
+                        <div class="flex flex-col items-center gap-2 cursor-pointer group">
+                            <div class="w-12 h-12 rounded-2xl bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400 flex items-center justify-center text-xl shadow-sm border border-purple-200 dark:border-purple-800/30 group-hover:-translate-y-1 transition-transform">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <span class="text-xs font-medium text-slate-600 dark:text-slate-300">Rahul</span>
+                        </div>
+                        <div class="flex flex-col items-center gap-2 cursor-pointer group">
+                            <div class="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-slate-800 border border-dashed border-slate-300 dark:border-slate-600 text-slate-400 dark:text-slate-500 flex items-center justify-center text-xl group-hover:bg-slate-200 dark:group-hover:bg-slate-700 transition-colors">
+                                <i class="fas fa-plus"></i>
+                            </div>
+                            <span class="text-xs font-medium text-slate-600 dark:text-slate-300">New</span>
+                        </div>
                     </div>
-                    <p style="font-size: 0.75rem;">John</p>
                 </div>
-                <div style="flex-shrink: 0; width: 4rem; text-align: center;">
-                    <div style="width: 3rem; height: 3rem; background: #d1fae5; border-radius: 9999px; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.25rem;">
-                        <i class="fas fa-user" style="color: #059669;"></i>
+
+                <div class="p-5 rounded-2xl bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800/50 dark:to-slate-800 border border-slate-200 dark:border-slate-700">
+                    <div class="flex items-start gap-4">
+                        <div class="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-slate-900 dark:text-white">Zero Fees Transfer</h4>
+                            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">IMPS, NEFT, and RTGS transfers are completely free of charge.</p>
+                        </div>
                     </div>
-                    <p style="font-size: 0.75rem;">Priya</p>
                 </div>
-                <div style="flex-shrink: 0; width: 4rem; text-align: center;">
-                    <div style="width: 3rem; height: 3rem; background: #f3e8ff; border-radius: 9999px; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.25rem;">
-                        <i class="fas fa-user" style="color: #9333ea;"></i>
+            </div>
+
+            <!-- Right side: Transfer Form -->
+            <div class="lg:col-span-3">
+                <form action="<%= request.getContextPath() %>/home" method="POST" onsubmit="return validateTransfer()" class="space-y-6">
+                    
+                    <div class="p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50">
+                        <label class="block text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">From Account</label>
+                        <p class="font-semibold text-slate-900 dark:text-white flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                            Savings Account <span class="text-slate-400 font-mono text-sm ml-1">• <%= String.valueOf(accountNumber).substring(Math.max(0, String.valueOf(accountNumber).length()-4)) %></span>
+                        </p>
                     </div>
-                    <p style="font-size: 0.75rem;">Rahul</p>
-                </div>
-                <div style="flex-shrink: 0; width: 4rem; text-align: center;">
-                    <div style="width: 3rem; height: 3rem; background: #fef3c7; border-radius: 9999px; display: flex; align-items: center; justify-content: center; margin: 0 auto 0.25rem;">
-                        <i class="fas fa-plus" style="color: #d97706;"></i>
-                    </div>
-                    <p style="font-size: 0.75rem;">Add</p>
-                </div>
-            </div>
-        </div>
 
-        <!-- Transfer Form -->
-        <form action="<%= request.getContextPath() %>/home" method="POST" onsubmit="return validateTransfer()">
-            <div style="margin-bottom: 1rem;">
-                <label style="display: block; font-size: 0.875rem; font-weight: 500; margin-bottom: 0.5rem;">From Account</label>
-                <input type="text" value="Savings Account - XXXX<%= String.valueOf(accountNumber).substring(Math.max(0, String.valueOf(accountNumber).length()-4)) %>"
-                       style="width: 100%; padding: 0.75rem; background: #f3f4f6; border: 1px solid #e5e7eb; border-radius: 0.5rem;" readonly>
-            </div>
-
-            <div style="margin-bottom: 1rem;">
-                <label style="display: block; font-size: 0.875rem; font-weight: 500; margin-bottom: 0.5rem;">To Account Number</label>
-                <input type="number" name="toAccount" id="toAccount" required
-                       style="width: 100%; padding: 0.75rem; border: 2px solid #e5e7eb; border-radius: 0.5rem;"
-                       placeholder="Enter beneficiary account number">
-            </div>
-
-            <div style="margin-bottom: 1rem;">
-                <label style="display: block; font-size: 0.875rem; font-weight: 500; margin-bottom: 0.5rem;">Amount (₹)</label>
-                <input type="number" name="toAmount" id="amount" step="0.01" min="1" required
-                       style="width: 100%; padding: 0.75rem; border: 2px solid #e5e7eb; border-radius: 0.5rem; text-align: right; font-size: 1.25rem;"
-                       placeholder="0.00">
-            </div>
-
-            <div style="margin-bottom: 1.5rem;">
-                <label style="display: block; font-size: 0.875rem; font-weight: 500; margin-bottom: 0.5rem;">Remarks (Optional)</label>
-                <input type="text" name="remarks"
-                       style="width: 100%; padding: 0.75rem; border: 2px solid #e5e7eb; border-radius: 0.5rem;"
-                       placeholder="Add a remark">
-            </div>
-
-            <div style="margin-bottom: 1.5rem; padding: 1rem; background: #eff6ff; border-radius: 0.5rem;">
-                <div style="display: flex; align-items: start;">
-                    <i class="fas fa-info-circle" style="color: #2563eb; margin-top: 0.25rem; margin-right: 0.75rem;"></i>
                     <div>
-                        <p style="font-size: 0.875rem; color: #1e40af; font-weight: 500;">Transfer Charges: ₹0</p>
-                        <p style="font-size: 0.75rem; color: #3b82f6;">IMPS/NEFT transfers are free</p>
+                        <label class="block text-sm font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">Transfer To (Account Number)</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                                <i class="fas fa-university"></i>
+                            </div>
+                            <input type="number" name="toAccount" id="toAccount" required
+                                   class="input-field pl-11"
+                                   placeholder="Enter beneficiary account number">
+                        </div>
                     </div>
-                </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">Amount</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 text-lg">
+                                ₹
+                            </div>
+                            <input type="number" name="toAmount" id="amount" step="0.01" min="1" required
+                                   class="w-full pl-10 pr-4 py-3 bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl text-xl font-brand font-bold text-slate-900 dark:text-white focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-right"
+                                   placeholder="0.00">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">Remarks (Optional)</label>
+                        <input type="text" name="remarks" class="input-field" placeholder="What is this for?">
+                    </div>
+
+                    <div class="pt-4 flex flex-col sm:flex-row gap-4">
+                        <button type="submit" class="flex-1 btn-primary py-4 text-lg flex items-center justify-center gap-2 shadow-lg shadow-blue-600/30">
+                            Send Money <i class="fas fa-paper-plane text-sm"></i>
+                        </button>
+                    </div>
+                </form>
             </div>
 
-            <div style="display: flex; gap: 1rem;">
-                <button type="submit" style="flex: 1; background: #2563eb; color: white; padding: 1rem; border-radius: 0.5rem; font-weight: 600; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;" onmouseover="this.style.background='#1e40af'" onmouseout="this.style.background='#2563eb'">
-                    <i class="fas fa-exchange-alt" style="margin-right: 0.5rem;"></i> Transfer Now
-                </button>
-                <a href="home" style="flex: 1; background: #e5e7eb; color: #374151; padding: 1rem; border-radius: 0.5rem; font-weight: 600; text-align: center; text-decoration: none;" onmouseover="this.style.background='#d1d5db'" onmouseout="this.style.background='#e5e7eb'">
-                    Cancel
-                </a>
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 
@@ -120,19 +136,23 @@
         const balance = <%= balance != null ? balance : 0 %>;
 
         if(!toAccount || toAccount.length < 8) {
-            alert('Please enter a valid account number');
+            if(window.AceBank) AceBank.showToast('Please enter a valid account number', 'error');
+            else alert('Please enter a valid account number');
             return false;
         }
         if(toAccount === '<%= accountNumber %>') {
-            alert('You cannot transfer money to your own account');
+            if(window.AceBank) AceBank.showToast('You cannot transfer money to your own account', 'error');
+            else alert('You cannot transfer money to your own account');
             return false;
         }
         if(amount <= 0) {
-            alert('Please enter a valid amount');
+            if(window.AceBank) AceBank.showToast('Please enter a valid amount', 'error');
+            else alert('Please enter a valid amount');
             return false;
         }
         if(amount > balance) {
-            alert('Insufficient balance for this transfer');
+            if(window.AceBank) AceBank.showToast('Insufficient balance for this transfer', 'error');
+            else alert('Insufficient balance for this transfer');
             return false;
         }
         return confirm('Transfer ₹' + amount.toFixed(2) + ' to account ' + toAccount + '?');

@@ -2,30 +2,28 @@ package com.acebank.lite.controllers;
 
 import java.io.IOException;
 import java.io.Serial;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Optional;
 
-import com.acebank.lite.dao.BankUserDao;
-import com.acebank.lite.dao.BankUserDaoImpl;
 import com.acebank.lite.models.LoginResult;
 import com.acebank.lite.models.Transaction;
 import com.acebank.lite.service.BankService;
 import com.acebank.lite.service.BankServiceImpl;
-import com.acebank.lite.util.PasswordUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
-import lombok.extern.java.Log;
+import java.util.logging.Logger;
 
-@Log
+
 @WebServlet(name = "Login", urlPatterns = "/Login")
 public class Login extends HttpServlet {
+    private static final Logger log = Logger.getLogger("Login");
 
     @Serial
     private static final long serialVersionUID = 1L;
 
     private final BankService bankService = new BankServiceImpl();
-    private final BankUserDao userDao = new BankUserDaoImpl();
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -38,27 +36,24 @@ public class Login extends HttpServlet {
         try {
             int accountNo = Integer.parseInt(accStr);
 
-            // 1. Get stored hash
-            String storedHash = userDao.getPasswordHash(accountNo);
+            LoginResult details = bankService.authenticate(accountNo, password).orElse(null);
 
-            if (storedHash != null && PasswordUtil.checkPassword(password, storedHash)) {
-                // 2. Get user details
-                LoginResult details = userDao.getUserDetails(accountNo);
-
+            if (details != null && details.success()) {
                 HttpSession session = request.getSession(true);
 
-                // 3. Populate Session Attributes
+                // Populate Session Attributes
                 session.setAttribute("accountNumber", accountNo);
                 session.setAttribute("firstName", details.firstName());
                 session.setAttribute("lastName", details.lastName());
                 session.setAttribute("email", details.email());
+                session.setAttribute("role", details.role());
                 session.setAttribute("balance", details.balance());
 
-                // 4. Fetch Transaction History
-                List<Transaction> statement = userDao.getStatement(accountNo);
+                // Fetch Transaction History
+                List<Transaction> statement = bankService.getTransactionHistory(accountNo);
                 session.setAttribute("transactionDetailsList", statement);
 
-                // 5. Handle "Remember Me" Cookie
+                // Handle "Remember Me" Cookie
                 if (rememberMe != null) {
                     Cookie cookie = new Cookie("rememberedAccount", String.valueOf(accountNo));
                     cookie.setMaxAge(30 * 24 * 60 * 60); // 30 days
@@ -71,12 +66,15 @@ public class Login extends HttpServlet {
 
             } else {
                 log.warning("Authentication failed for account: " + accStr);
-                response.sendRedirect("LoginFail.jsp");
+                String reason = (details != null && details.message() != null && !details.message().isBlank())
+                        ? details.message()
+                        : "Invalid account number or password";
+                response.sendRedirect("Login.jsp?error=" + URLEncoder.encode(reason, StandardCharsets.UTF_8));
             }
 
         } catch (Exception e) {
             log.severe("Login Error: " + e.getMessage());
-            response.sendRedirect("LoginFail.jsp");
+            response.sendRedirect("Login.jsp?error=" + URLEncoder.encode("Something went wrong. Please try again.", StandardCharsets.UTF_8));
         }
     }
 

@@ -7,13 +7,14 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import lombok.extern.java.Log;
+import java.util.logging.Logger;
 
 import java.io.IOException;
 
-@Log
+
 @WebServlet("/test-notification")
 public class TestNotification extends HttpServlet {
+    private static final Logger log = Logger.getLogger("TestNotification");
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)

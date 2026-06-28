@@ -8,255 +8,160 @@
         return;
     }
 %>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AceBank - Verify OTP</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        .otp-input {
-            width: 60px;
-            height: 60px;
-            text-align: center;
-            font-size: 28px;
-            font-weight: bold;
-            border: 2px solid #e5e7eb;
-            border-radius: 10px;
-            margin: 0 5px;
-            transition: all 0.3s;
-            background: white;
-        }
-        .otp-input:focus {
-            border-color: #2563eb;
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
-        }
-        .timer {
-            font-size: 16px;
-            color: #6b7280;
-            font-weight: 500;
-        }
-        .timer-expired {
-            color: #dc2626;
-        }
-        .otp-container {
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-            margin: 20px 0;
-        }
-    </style>
-</head>
-<body class="bg-gray-100">
-    <div class="min-h-screen flex flex-col">
-        <!-- Header -->
-        <header class="bg-gradient-to-r from-blue-900 to-blue-800 text-white shadow-lg">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-                <a href="index.jsp" class="text-2xl font-bold">
-                    <i class="fas fa-university mr-2"></i>
-                    <span class="text-blue-300">Ace</span><span class="text-yellow-400">Bank</span>
+<jsp:include page="/includes/header.jsp" />
+
+<div class="relative min-h-[85vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+        <div class="absolute top-0 left-1/4 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl animate-pulse-slow"></div>
+    </div>
+
+    <div class="relative z-10 w-full max-w-md page-enter">
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-100 to-purple-100 dark:from-indigo-900/40 dark:to-purple-900/40 text-indigo-600 dark:text-indigo-400 shadow-inner mb-4">
+                <i class="fas fa-lock-open text-2xl"></i>
+            </div>
+            <h2 class="text-3xl font-brand font-bold text-gray-900 dark:text-white mb-2">Verify OTP</h2>
+            <p class="text-gray-500 dark:text-gray-400">We've sent a 6-digit code to</p>
+            <p class="font-semibold text-blue-600 dark:text-blue-400"><%= email %></p>
+            <% if(firstName != null) { %>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Hello, <%= firstName %>!</p>
+            <% } %>
+        </div>
+
+        <% if(request.getParameter("error") != null) { %>
+            <div class="mb-6 p-4 rounded-xl bg-red-50/80 dark:bg-red-900/20 border border-red-200 dark:border-red-800/30 flex items-start gap-3">
+                <i class="fas fa-exclamation-circle text-red-500 mt-0.5"></i>
+                <p class="text-sm font-medium text-red-700 dark:text-red-400"><%= request.getParameter("error").replace("+", " ") %></p>
+            </div>
+        <% } %>
+
+        <div class="glass-panel rounded-3xl p-8 shadow-2xl relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-indigo-400 to-purple-600"></div>
+
+            <form action="VerifyOTP" method="POST" id="otpForm" class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-4 text-center">
+                        Enter 6-digit OTP
+                    </label>
+                    <div class="flex justify-center gap-2 mb-2">
+                        <input type="text" name="otp1" id="otp1" maxlength="1" class="w-12 h-14 text-center text-2xl font-bold bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all text-slate-900 dark:text-white" onkeyup="moveToNext(this, 'otp2')" onkeypress="return onlyNumbers(event)" oninput="combineOTP()" autofocus>
+                        <input type="text" name="otp2" id="otp2" maxlength="1" class="w-12 h-14 text-center text-2xl font-bold bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all text-slate-900 dark:text-white" onkeyup="moveToNext(this, 'otp3')" onkeypress="return onlyNumbers(event)" oninput="combineOTP()">
+                        <input type="text" name="otp3" id="otp3" maxlength="1" class="w-12 h-14 text-center text-2xl font-bold bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all text-slate-900 dark:text-white" onkeyup="moveToNext(this, 'otp4')" onkeypress="return onlyNumbers(event)" oninput="combineOTP()">
+                        <input type="text" name="otp4" id="otp4" maxlength="1" class="w-12 h-14 text-center text-2xl font-bold bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all text-slate-900 dark:text-white" onkeyup="moveToNext(this, 'otp5')" onkeypress="return onlyNumbers(event)" oninput="combineOTP()">
+                        <input type="text" name="otp5" id="otp5" maxlength="1" class="w-12 h-14 text-center text-2xl font-bold bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all text-slate-900 dark:text-white" onkeyup="moveToNext(this, 'otp6')" onkeypress="return onlyNumbers(event)" oninput="combineOTP()">
+                        <input type="text" name="otp6" id="otp6" maxlength="1" class="w-12 h-14 text-center text-2xl font-bold bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all text-slate-900 dark:text-white" onkeyup="moveToNext(this, '')" onkeypress="return onlyNumbers(event)" oninput="combineOTP()">
+                    </div>
+                    <input type="hidden" name="otp" id="otp">
+                </div>
+
+                <div class="text-center">
+                    <span class="text-sm font-medium text-slate-500 dark:text-slate-400" id="timer">OTP expires in 10:00</span>
+                </div>
+
+                <button type="submit" id="submitBtn" class="btn-primary w-full flex items-center justify-center gap-2 py-3.5 text-lg">
+                    Verify OTP <i class="fas fa-check-circle text-sm"></i>
+                </button>
+            </form>
+
+            <div class="mt-6 flex items-center justify-center gap-4 text-sm">
+                <form action="VerifyOTP" method="POST" class="inline">
+                    <input type="hidden" name="action" value="resend">
+                    <button type="submit" class="font-semibold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1">
+                        <i class="fas fa-redo-alt text-[10px]"></i> Resend
+                    </button>
+                </form>
+                <span class="text-slate-300 dark:text-slate-700">|</span>
+                <a href="ForgotPassword.jsp" class="font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">
+                    Cancel
                 </a>
             </div>
-        </header>
 
-        <!-- Main Content -->
-        <div class="flex-1 flex items-center justify-center py-12 px-4">
-            <div class="max-w-md w-full">
-                <div class="bg-white rounded-xl shadow-lg p-8">
-                    <div class="text-center mb-8">
-                        <div class="h-20 w-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <i class="fas fa-lock-open text-3xl text-blue-600"></i>
-                        </div>
-                        <h2 class="text-2xl font-bold text-gray-800">Verify OTP</h2>
-                        <p class="text-gray-500 mt-2">We've sent a 6-digit code to</p>
-                        <p class="font-semibold text-blue-600"><%= email %></p>
-                        <% if(firstName != null) { %>
-                            <p class="text-sm text-gray-500 mt-1">Hello, <%= firstName %>!</p>
-                        <% } %>
-                    </div>
-
-                    <% if(request.getParameter("error") != null) { %>
-                        <div class="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center">
-                            <i class="fas fa-exclamation-circle text-red-500 mr-3"></i>
-                            <p class="text-red-600 text-sm"><%= request.getParameter("error").replace("+", " ") %></p>
-                        </div>
-                    <% } %>
-
-                    <form action="VerifyOTP" method="POST" id="otpForm">
-                        <div class="mb-6">
-                            <label class="block text-sm font-medium text-gray-700 mb-3 text-center">
-                                Enter 6-digit OTP
-                            </label>
-                            <div class="otp-container">
-                                <input type="text" name="otp1" id="otp1" maxlength="1"
-                                       class="otp-input"
-                                       onkeyup="moveToNext(this, 'otp2')"
-                                       onkeypress="return onlyNumbers(event)"
-                                       oninput="combineOTP()"
-                                       autofocus>
-                                <input type="text" name="otp2" id="otp2" maxlength="1"
-                                       class="otp-input"
-                                       onkeyup="moveToNext(this, 'otp3')"
-                                       onkeypress="return onlyNumbers(event)"
-                                       oninput="combineOTP()">
-                                <input type="text" name="otp3" id="otp3" maxlength="1"
-                                       class="otp-input"
-                                       onkeyup="moveToNext(this, 'otp4')"
-                                       onkeypress="return onlyNumbers(event)"
-                                       oninput="combineOTP()">
-                                <input type="text" name="otp4" id="otp4" maxlength="1"
-                                       class="otp-input"
-                                       onkeyup="moveToNext(this, 'otp5')"
-                                       onkeypress="return onlyNumbers(event)"
-                                       oninput="combineOTP()">
-                                <input type="text" name="otp5" id="otp5" maxlength="1"
-                                       class="otp-input"
-                                       onkeyup="moveToNext(this, 'otp6')"
-                                       onkeypress="return onlyNumbers(event)"
-                                       oninput="combineOTP()">
-                                <input type="text" name="otp6" id="otp6" maxlength="1"
-                                       class="otp-input"
-                                       onkeyup="moveToNext(this, '')"
-                                       onkeypress="return onlyNumbers(event)"
-                                       oninput="combineOTP()">
-                            </div>
-                            <input type="hidden" name="otp" id="otp">
-                        </div>
-
-                        <div class="text-center mb-4">
-                            <span class="timer" id="timer">OTP expires in 10:00</span>
-                        </div>
-
-                        <button type="submit" id="submitBtn" class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition flex items-center justify-center">
-                            <i class="fas fa-check-circle mr-2"></i>Verify OTP
-                        </button>
-                    </form>
-
-                    <div class="mt-6 flex justify-center space-x-4">
-                        <form action="VerifyOTP" method="POST" class="inline">
-                            <input type="hidden" name="action" value="resend">
-                            <button type="submit" class="text-blue-600 hover:underline text-sm flex items-center">
-                                <i class="fas fa-redo-alt mr-1"></i>Resend OTP
-                            </button>
-                        </form>
-                        <span class="text-gray-300">|</span>
-                        <a href="ForgotPassword.jsp" class="text-gray-600 hover:text-gray-800 text-sm flex items-center">
-                            <i class="fas fa-arrow-left mr-1"></i>Back
-                        </a>
-                    </div>
-
-                    <div class="mt-6 p-3 bg-blue-50 rounded-lg">
-                        <p class="text-xs text-blue-600 flex items-center">
-                            <i class="fas fa-info-circle mr-2"></i>
-                            For demo, check server logs for OTP if email not configured
-                        </p>
-                    </div>
-                </div>
+            <div class="mt-6 p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl text-center">
+                <p class="text-xs text-slate-500 dark:text-slate-400 flex items-center justify-center gap-2">
+                    <i class="fas fa-info-circle text-blue-500"></i>
+                    Check server console logs for the OTP in demo mode.
+                </p>
             </div>
         </div>
     </div>
+</div>
 
-    <script>
-        // Timer functionality
-        let timeLeft = 600; // 10 minutes in seconds
-        let timerInterval;
+<script>
+    let timeLeft = 600;
+    let timerInterval;
 
-        function updateTimer() {
-            const minutes = Math.floor(timeLeft / 60);
-            const seconds = timeLeft % 60;
-            const timerElement = document.getElementById('timer');
+    function updateTimer() {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        const timerElement = document.getElementById('timer');
 
-            if (timeLeft <= 0) {
-                timerElement.innerHTML = 'OTP expired';
-                timerElement.classList.add('timer-expired');
-                clearInterval(timerInterval);
-                document.getElementById('submitBtn').disabled = true;
-                document.getElementById('submitBtn').classList.add('opacity-50', 'cursor-not-allowed');
-                return;
-            }
-
-            timerElement.innerHTML = `OTP expires in ${minutes}:${seconds.toString().padStart(2, '0')}`;
-            timeLeft--;
+        if (timeLeft <= 0) {
+            timerElement.innerHTML = 'OTP expired';
+            timerElement.className = 'text-sm font-medium text-red-500';
+            clearInterval(timerInterval);
+            document.getElementById('submitBtn').disabled = true;
+            document.getElementById('submitBtn').classList.add('opacity-50', 'cursor-not-allowed');
+            return;
         }
 
-        timerInterval = setInterval(updateTimer, 1000);
+        timerElement.innerHTML = `OTP expires in ${minutes}:${seconds.toString().padStart(2, '0')}`;
+        timeLeft--;
+    }
 
-        // Only allow numbers
-        function onlyNumbers(e) {
-            const charCode = e.which ? e.which : e.keyCode;
-            if (charCode < 48 || charCode > 57) {
-                e.preventDefault();
-                return false;
-            }
-            return true;
-        }
+    timerInterval = setInterval(updateTimer, 1000);
 
-        // Move to next input
-        function moveToNext(current, nextId) {
-            if (current.value.length === 1) {
-                if (nextId) {
-                    document.getElementById(nextId)?.focus();
-                }
-            }
-        }
-
-        // Combine all OTP digits
-        function combineOTP() {
-            const otp =
-                document.getElementById('otp1').value +
-                document.getElementById('otp2').value +
-                document.getElementById('otp3').value +
-                document.getElementById('otp4').value +
-                document.getElementById('otp5').value +
-                document.getElementById('otp6').value;
-
-            document.getElementById('otp').value = otp;
-
-            // Auto-submit when all 6 digits are entered
-            if (otp.length === 6) {
-                setTimeout(() => {
-                    document.getElementById('otpForm').submit();
-                }, 100); // Small delay to ensure last digit is registered
-            }
-        }
-
-        // Handle backspace key
-        document.querySelectorAll('.otp-input').forEach((input, index) => {
-            input.addEventListener('keydown', function(e) {
-                if (e.key === 'Backspace' && this.value.length === 0) {
-                    const prev = document.getElementById(`otp${index}`);
-                    if (prev) {
-                        prev.focus();
-                    }
-                }
-            });
-        });
-
-        // Paste functionality
-        document.addEventListener('paste', function(e) {
+    function onlyNumbers(e) {
+        const charCode = e.which ? e.which : e.keyCode;
+        if (charCode < 48 || charCode > 57) {
             e.preventDefault();
-            const paste = (e.clipboardData || window.clipboardData).getData('text');
-            if (paste.length === 6 && /^\d+$/.test(paste)) {
-                for (let i = 0; i < 6; i++) {
-                    document.getElementById(`otp${i+1}`).value = paste[i];
-                }
-                combineOTP();
-            } else {
-                alert('Please paste a valid 6-digit OTP');
-            }
-        });
+            return false;
+        }
+        return true;
+    }
 
-        // Prevent form submission if OTP is incomplete
-        document.getElementById('otpForm').addEventListener('submit', function(e) {
-            const otp = document.getElementById('otp').value;
-            if (otp.length !== 6) {
-                e.preventDefault();
-                alert('Please enter complete 6-digit OTP');
+    function moveToNext(current, nextId) {
+        if (current.value.length === 1 && nextId) {
+            document.getElementById(nextId)?.focus();
+        }
+    }
+
+    function combineOTP() {
+        const otp = Array.from({length: 6}, (_, i) => document.getElementById(`otp${i+1}`).value).join('');
+        document.getElementById('otp').value = otp;
+        if (otp.length === 6) {
+            setTimeout(() => document.getElementById('otpForm').submit(), 100);
+        }
+    }
+
+    document.querySelectorAll('input[id^="otp"]').forEach((input, index) => {
+        input.addEventListener('keydown', function(e) {
+            if (e.key === 'Backspace' && this.value.length === 0 && index > 0) {
+                document.getElementById(`otp${index}`).focus();
             }
         });
-    </script>
-</body>
-</html>
+    });
+
+    document.addEventListener('paste', function(e) {
+        e.preventDefault();
+        const paste = (e.clipboardData || window.clipboardData).getData('text').trim();
+        if (paste.length === 6 && /^\d+$/.test(paste)) {
+            for (let i = 0; i < 6; i++) {
+                document.getElementById(`otp${i+1}`).value = paste[i];
+            }
+            combineOTP();
+        } else {
+            if(window.AceBank) AceBank.showToast('Please paste a valid 6-digit OTP', 'error');
+            else alert('Please paste a valid 6-digit OTP');
+        }
+    });
+
+    document.getElementById('otpForm').addEventListener('submit', function(e) {
+        if (document.getElementById('otp').value.length !== 6) {
+            e.preventDefault();
+            if(window.AceBank) AceBank.showToast('Please enter the complete 6-digit OTP', 'error');
+            else alert('Please enter complete 6-digit OTP');
+        }
+    });
+</script>
+
+<jsp:include page="/includes/footer.jsp" />

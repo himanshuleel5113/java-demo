@@ -1,37 +1,29 @@
 package com.acebank.lite.util;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import org.apache.ibatis.jdbc.ScriptRunner;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.logging.Logger;
 
 public final class ConnectionManager {
 
-    private static Connection connection;
+    private static HikariDataSource dataSource;
     private static boolean isSchemaInitialized = false;
     static final Logger log = Logger.getLogger(ConnectionManager.class.getName());
 
     private ConnectionManager() {}
 
-    public static synchronized Connection getConnection() throws SQLException {
-        // Always create a new connection to avoid closed connection issues
-        Connection newConn = establishConnection();
-
-        // Run schema initialization only once
-        if (!isSchemaInitialized) {
-            runInitScript(newConn);
-            isSchemaInitialized = true;
+    private static synchronized void initDataSource() throws SQLException {
+        if (dataSource != null) {
+            return;
         }
-
-        return newConn;
-    }
-
-    private static Connection establishConnection() throws SQLException {
+        
         try {
             String url = ConfigLoader.getProperty(ConfigKeys.DB_URL);
             String user = ConfigLoader.getProperty(ConfigKeys.DB_USER);
@@ -42,17 +34,46 @@ public final class ConnectionManager {
                 throw new SQLException("Database configuration missing. Check application-dev.properties");
             }
 
-            Class.forName(driverName);
-            Connection conn = DriverManager.getConnection(url, user, pass);
-            log.info("Database connection established to: " + url);
-            return conn;
+            Class.forName(driverName); // Ensure driver is loaded
+
+            HikariConfig config = new HikariConfig();
+            config.setJdbcUrl(url);
+            config.setUsername(user);
+            config.setPassword(pass);
+            config.setDriverClassName(driverName);
+            
+            // Pool configuration
+            config.setMaximumPoolSize(20);
+            config.setMinimumIdle(5);
+            config.setIdleTimeout(300000);
+            config.setConnectionTimeout(20000);
+            config.setMaxLifetime(1200000);
+
+            dataSource = new HikariDataSource(config);
+            log.info("HikariCP Connection Pool initialized for: " + url);
+
+            // Run schema init on startup
+            if (!isSchemaInitialized) {
+                try (Connection conn = dataSource.getConnection()) {
+                    runInitScript(conn);
+                    isSchemaInitialized = true;
+                }
+            }
+
         } catch (ClassNotFoundException e) {
-            log.severe("MySQL JDBC Driver not found: " + e.getMessage());
+            log.severe("JDBC Driver not found: " + e.getMessage());
             throw new SQLException("Database driver not found", e);
         } catch (Exception e) {
-            log.severe("Database Connection Failed: " + e.getMessage());
-            throw new SQLException("Could not establish database connection", e);
+            log.severe("Failed to initialize connection pool: " + e.getMessage());
+            throw new SQLException("Could not initialize connection pool", e);
         }
+    }
+
+    public static Connection getConnection() throws SQLException {
+        if (dataSource == null) {
+            initDataSource();
+        }
+        return dataSource.getConnection();
     }
 
     private static void runInitScript(Connection conn) {
@@ -78,21 +99,22 @@ public final class ConnectionManager {
             runner.setStopOnError(false);
             runner.setThrowWarning(false);
             runner.setAutoCommit(true);
-            runner.setSendFullScript(true);
+            // Run statement-by-statement (split on ';'). sendFullScript(true) sent the whole
+            // multi-statement file as ONE JDBC call, which fails unless the URL enables
+            // allowMultiQueries — that is why the schema never actually got created on startup.
+            runner.setSendFullScript(false);
 
             log.info("Executing schema script...");
             runner.runScript(new BufferedReader(new InputStreamReader(is)));
             log.info("Database schema script executed successfully");
 
             // Verify tables were created
-            var stmt = conn.createStatement();
-            var rs = stmt.executeQuery("SHOW TABLES");
-            log.info("Tables in database:");
-            while (rs.next()) {
-                log.info("  - " + rs.getString(1));
+            try (var stmt = conn.createStatement(); var rs = stmt.executeQuery("SHOW TABLES")) {
+                log.info("Tables in database:");
+                while (rs.next()) {
+                    log.info("  - " + rs.getString(1));
+                }
             }
-            rs.close();
-            stmt.close();
 
         } catch (Exception e) {
             log.severe("Schema initialization error: " + e.getMessage());

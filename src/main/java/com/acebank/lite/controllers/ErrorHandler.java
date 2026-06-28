@@ -5,14 +5,15 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.extern.java.Log;
+import java.util.logging.Logger;
 
 import java.io.IOException;
 import java.io.Serial;
 
-@Log
+
 @WebServlet("/error-handler")
 public class ErrorHandler extends HttpServlet {
+    private static final Logger log = Logger.getLogger("ErrorHandler");
     @Serial
     private static final long serialVersionUID = 1L;
 

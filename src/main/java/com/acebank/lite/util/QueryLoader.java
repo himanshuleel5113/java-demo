@@ -25,9 +25,19 @@ public class QueryLoader {
         for (String key : keys) {
             if (current instanceof Map) {
                 current = ((Map<String, Object>) current).get(key);
+            } else {
+                return null;
             }
         }
-        assert current instanceof String;
-        return (String) current;
+        return current instanceof String ? (String) current : null;
+    }
+
+    /**
+     * Null-safe lookup. Returns the configured query for {@code path}, or
+     * {@code null} when it is not present so callers can fall back to an inline
+     * default.
+     */
+    public static String getQuery(String path) {
+        return get(path);
     }
 }

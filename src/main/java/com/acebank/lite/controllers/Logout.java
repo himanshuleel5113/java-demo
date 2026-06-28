@@ -6,7 +6,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import lombok.extern.java.Log;
+import java.util.logging.Logger;
 
 import java.io.IOException;
 import java.io.Serial;
@@ -14,9 +14,10 @@ import java.io.Serial;
 /**
  * Servlet implementation class Logout
  */
-@Log
+
 @WebServlet(name = "Logout", urlPatterns = "/Logout")
 public class Logout extends HttpServlet {
+    private static final Logger log = Logger.getLogger("Logout");
     @Serial
     private static final long serialVersionUID = 1L;
 

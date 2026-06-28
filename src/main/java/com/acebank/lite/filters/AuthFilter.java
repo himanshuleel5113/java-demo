@@ -12,26 +12,10 @@ import java.util.List;
 @WebFilter(urlPatterns = {"/*"})
 public class AuthFilter implements Filter {
 
-    // Public pages that don't require authentication
     private static final List<String> PUBLIC_PATHS = Arrays.asList(
-            "/Login.jsp",
-            "/SignUp.jsp",
-            "/index.jsp",
-            "/ForgotPassword.jsp",
-            "/ResetPassword.jsp",
-            "/VerifyOTP.jsp",      // ADD THIS - OTP verification page
-            "/ForgotFail.jsp",
-            "/LoginFail.jsp",
-            "/GenericError.html",
-            "/test-connection.jsp",
-            "/test-email.jsp",
-            "/test-notification",
-            "/test-notifications.jsp",
-            "/Forgot",             // ADD THIS - Forgot password servlet
-            "/VerifyOTP",          // ADD THIS - OTP verification servlet
-            "/ResetPassword",      // ADD THIS - Reset password servlet
-            "/signup",
-            "/Login"
+            "/Login.jsp", "/SignUp.jsp", "/index.jsp", "/ForgotPassword.jsp",
+            "/ResetPassword.jsp", "/VerifyOTP.jsp", "/error.jsp", "/Forgot",
+            "/VerifyOTP", "/ResetPassword", "/signup", "/Login"
     );
 
     @Override
@@ -44,11 +28,12 @@ public class AuthFilter implements Filter {
         String path = httpRequest.getServletPath();
         String contextPath = httpRequest.getContextPath();
 
-        System.out.println("AuthFilter - Processing path: " + path);
+        if (path.startsWith("/assets/") || path.startsWith("/css/") || path.startsWith("/js/")) {
+            chain.doFilter(request, response);
+            return;
+        }
 
-        // Check if the requested path is public
         if (isPublicPath(path)) {
-            System.out.println("AuthFilter - Public path allowed: " + path);
             chain.doFilter(request, response);
             return;
         }
@@ -57,10 +42,13 @@ public class AuthFilter implements Filter {
         boolean isLoggedIn = (session != null && session.getAttribute("accountNumber") != null);
 
         if (isLoggedIn) {
-            System.out.println("AuthFilter - Authenticated user accessing: " + path);
+            String role = (String) session.getAttribute("role");
+            if (path.startsWith("/admin") && !"ADMIN".equals(role)) {
+                httpResponse.sendRedirect(contextPath + "/Home.jsp?error=Access+Denied");
+                return;
+            }
             chain.doFilter(request, response);
         } else {
-            System.out.println("AuthFilter - Unauthorized access to: " + path + " - Redirecting to login");
             httpResponse.sendRedirect(contextPath + "/Login.jsp?error=Please+login+first");
         }
     }
@@ -72,15 +60,5 @@ public class AuthFilter implements Filter {
             }
         }
         return false;
-    }
-
-    @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
-        System.out.println("AuthFilter initialized");
-    }
-
-    @Override
-    public void destroy() {
-        System.out.println("AuthFilter destroyed");
     }
 }

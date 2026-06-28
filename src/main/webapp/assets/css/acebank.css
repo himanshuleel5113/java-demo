@@ -1,0 +1,287 @@
+/* AceBank Global Design System */
+
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Inter:wght@400;500;600&display=swap');
+
+:root {
+  --primary-color: #0f2b4b;
+  --secondary-color: #eab308;
+  --accent-color: #3b82f6;
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.2);
+}
+
+/*
+ * NOTE: Tailwind is loaded via the Play CDN (cdn.tailwindcss.com) with
+ * darkMode: 'class'. The CDN toggles the `.dark` class on <html>, and it does
+ * NOT process @apply inside this external stylesheet. So every component below
+ * is written in PLAIN CSS, and every dark override is keyed on `.dark`
+ * (previously `.dark-mode`, which was never applied — that was the dark-theme bug).
+ */
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #f8fafc;
+  color: #1e293b;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+h1, h2, h3, h4, h5, h6, .brand-font {
+  font-family: 'Outfit', sans-serif;
+}
+
+/* Glassmorphism Utilities */
+.glass-panel {
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+}
+
+.dark .glass-panel {
+  background: rgba(30, 41, 59, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+}
+
+/* Animated Gradients */
+.gradient-bg {
+  background: linear-gradient(-45deg, #0f2b4b, #1e3a8a, #2563eb, #1e40af);
+  background-size: 400% 400%;
+  animation: gradient 15s ease infinite;
+}
+
+@keyframes gradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Form Elements */
+.input-field {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid #e5e7eb;
+  background-color: rgba(255, 255, 255, 0.5);
+  color: #1e293b;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.input-field:focus {
+  background-color: #ffffff;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+}
+
+.input-field::placeholder {
+  color: #9ca3af;
+}
+
+.dark .input-field {
+  background-color: rgba(31, 41, 55, 0.5);
+  border-color: #374151;
+  color: #f3f4f6;
+}
+
+.dark .input-field:focus {
+  background-color: #1f2937;
+  border-color: #3b82f6;
+}
+
+.dark .input-field::placeholder {
+  color: #6b7280;
+}
+
+/* Buttons */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.5rem;
+  background-image: linear-gradient(to right, #2563eb, #1e40af);
+  color: #ffffff;
+  font-weight: 600;
+  border-radius: 0.75rem;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  background-image: linear-gradient(to right, #1d4ed8, #1e3a8a);
+  transform: translateY(-2px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.5rem;
+  background-color: #ffffff;
+  color: #1f2937;
+  font-weight: 600;
+  border-radius: 0.75rem;
+  border: 1px solid #e5e7eb;
+  cursor: pointer;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+  background-color: #f9fafb;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.dark .btn-secondary {
+  background-color: #1f2937;
+  border-color: #374151;
+  color: #e5e7eb;
+}
+
+.dark .btn-secondary:hover {
+  background-color: #374151;
+}
+
+/* Micro Animations */
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+.animate-pulse-slow {
+  animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #475569;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Base Dark Mode Overrides (keyed on `.dark`, toggled on <html>) */
+.dark body {
+  background-color: #0f172a;
+  color: #f8fafc;
+}
+
+.dark .bg-white {
+  background-color: #1e293b !important;
+}
+
+.dark .text-gray-900 {
+  color: #f8fafc !important;
+}
+
+.dark .text-gray-800 {
+  color: #f1f5f9 !important;
+}
+
+.dark .text-gray-600 {
+  color: #cbd5e1 !important;
+}
+
+.dark .text-gray-500 {
+  color: #94a3b8 !important;
+}
+
+.dark .border-gray-200 {
+  border-color: #334155 !important;
+}
+
+/* Admin sidebar navigation */
+.nav-item,
+.nav-active {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: 0.75rem;
+  font-weight: 500;
+  font-size: 0.9rem;
+  color: #475569;
+  transition: all 0.2s ease;
+}
+.nav-item:hover {
+  background-color: #f1f5f9;
+  color: #0f172a;
+}
+.dark .nav-item {
+  color: #94a3b8;
+}
+.dark .nav-item:hover {
+  background-color: rgba(30, 41, 59, 0.6);
+  color: #ffffff;
+}
+.nav-active {
+  background-image: linear-gradient(to right, #0f2b4b, #1e3a8a);
+  color: #ffffff !important;
+  font-weight: 600;
+  box-shadow: 0 6px 16px -6px rgba(15, 43, 75, 0.6);
+}
+
+/* Admin stat / content cards */
+.admin-card {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 1.25rem;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+}
+.dark .admin-card {
+  background-color: #0f172a;
+  border-color: #1e293b;
+}
+
+/* Status pills */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 9999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+/* Page transitions */
+.page-enter {
+  opacity: 0;
+  transform: translateY(10px);
+  animation: fadeUp 0.5s ease forwards;
+}
+
+@keyframes fadeUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

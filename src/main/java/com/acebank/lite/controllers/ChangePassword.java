@@ -10,14 +10,15 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import lombok.extern.java.Log;
+import java.util.logging.Logger;
 
 import java.io.IOException;
 import java.sql.SQLException;
 
-@Log
+
 @WebServlet("/ChangePassword")
 public class ChangePassword extends HttpServlet {
+    private static final Logger log = Logger.getLogger("ChangePassword");
     private static final long serialVersionUID = 1L;
     private final BankService bankService = new BankServiceImpl();
 
