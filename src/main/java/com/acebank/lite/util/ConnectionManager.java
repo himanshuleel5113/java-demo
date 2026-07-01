@@ -28,7 +28,10 @@ public final class ConnectionManager {
             String url = ConfigLoader.getProperty(ConfigKeys.DB_URL);
             String user = ConfigLoader.getProperty(ConfigKeys.DB_USER);
             String pass = ConfigLoader.getProperty(ConfigKeys.DB_PWD);
-            String driverName = ConfigLoader.getProperty(ConfigKeys.DB_MYSQL_DRIVER);
+            // Default the driver class so deployments only need DB_URL/DB_USER/DB_PASSWORD.
+            // Without this default, a Render env without DB_MYSQL_DRIVER set leaves driverName
+            // null -> Class.forName(null) throws -> the whole pool fails -> every login dies.
+            String driverName = ConfigLoader.getProperty(ConfigKeys.DB_MYSQL_DRIVER, "com.mysql.cj.jdbc.Driver");
 
             if (url == null || user == null || pass == null) {
                 throw new SQLException("Database configuration missing. Check application-dev.properties");
@@ -77,7 +80,9 @@ public final class ConnectionManager {
     }
 
     private static void runInitScript(Connection conn) {
-        String scriptPath = ConfigLoader.getProperty(ConfigKeys.DB_SCRIPT_PATH);
+        // Default the script path so a fresh cloud DB (e.g. on Render) gets its v2 schema
+        // auto-created on first boot even when DB_SCRIPT_PATH is not set as an env var.
+        String scriptPath = ConfigLoader.getProperty(ConfigKeys.DB_SCRIPT_PATH, "/sql/schema_initializer.sql");
         if (scriptPath == null || scriptPath.isEmpty()) {
             log.warning("No script path configured, skipping schema initialization");
             return;

@@ -38,4 +38,15 @@ public class ConfigLoader {
         // Priority 2: Check the properties file
         return properties.getProperty(key);
     }
+
+    /**
+     * Same lookup as {@link #getProperty(String)} but falls back to {@code defaultValue}
+     * when neither an environment variable nor the properties file supplies the key.
+     * This is what keeps the app working on Render, where the gitignored
+     * application-dev.properties is absent and only a handful of env vars are set.
+     */
+    public static String getProperty(String key, String defaultValue) {
+        String value = getProperty(key);
+        return (value != null && !value.isBlank()) ? value : defaultValue;
+    }
 }
