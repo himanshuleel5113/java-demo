@@ -32,8 +32,10 @@ RUN curl -fsSL https://archive.apache.org/dist/tomcat/tomcat-11/v${TOMCAT_VERSIO
 # remove default webapps to avoid unnecessary examples being served
 RUN rm -rf ${CATALINA_HOME}/webapps/*
 
-# Copy built WAR from the build stage
-COPY --from=build /app/target/*.war ${CATALINA_HOME}/webapps/ace-bank-lite.war
+# Copy built WAR from the build stage.
+# Deployed as ROOT.war so the app is served at "/" (e.g. https://<host>/Login.jsp)
+# instead of under the "/ace-bank-lite" context path, which made the root URL 404.
+COPY --from=build /app/target/*.war ${CATALINA_HOME}/webapps/ROOT.war
 
 EXPOSE 8080
 
