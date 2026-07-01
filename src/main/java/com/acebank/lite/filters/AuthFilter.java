@@ -15,7 +15,7 @@ public class AuthFilter implements Filter {
     private static final List<String> PUBLIC_PATHS = Arrays.asList(
             "/Login.jsp", "/SignUp.jsp", "/index.jsp", "/ForgotPassword.jsp",
             "/ResetPassword.jsp", "/VerifyOTP.jsp", "/error.jsp", "/Forgot",
-            "/VerifyOTP", "/ResetPassword", "/signup", "/Login"
+            "/VerifyOTP", "/ResetPassword", "/signup", "/Login", "/health/db"
     );
 
     @Override

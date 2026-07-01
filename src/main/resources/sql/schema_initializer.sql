@@ -7,8 +7,12 @@
 -- To perform a clean reset (drop + recreate), do the DROPs manually first
 -- (see README) and then run this script.
 
-CREATE DATABASE IF NOT EXISTS himdata;
-USE himdata;
+-- NOTE: No "CREATE DATABASE / USE himdata" here on purpose. The target database is
+-- whatever the JDBC URL connects to (e.g. jdbc:mysql://host:3306/<db>). On managed
+-- cloud MySQL (Railway, Aiven, Clever Cloud, ...) the DB name is fixed and you often
+-- lack CREATE DATABASE rights; forcing "USE himdata" would create the tables in the
+-- wrong schema and the app would then find no tables. Staying in the connected DB
+-- keeps this portable across local and cloud deployments.
 
 -- ============================================================
 -- 1. USERS
@@ -326,18 +330,20 @@ CREATE TABLE IF NOT EXISTS LOGIN_ATTEMPTS (
 );
 
 -- ============================================================
--- Optional seed: default admin user (password: Admin@123)
+-- Seed: default admin user
+--   Login account number : 10000001
+--   Password             : Admin@123   (BCrypt hash below, verified against jbcrypt)
 -- ------------------------------------------------------------
--- Intentionally DISABLED so the bank starts empty. To provision a
--- default admin on a fresh deployment, uncomment the block below;
--- the WHERE NOT EXISTS guard makes it safe to run repeatedly.
+-- ENABLED so a fresh cloud deployment has a working admin to log in with.
+-- The WHERE NOT EXISTS guards make both inserts safe to run on every startup.
+-- Change the password from the app after first login.
 -- ============================================================
--- INSERT INTO USERS (FIRST_NAME, LAST_NAME, AADHAAR_NO, EMAIL, PASSWORD_HASH, ROLE, PHONE, STATUS)
--- SELECT 'Admin', 'AceBank', '000000000000', 'admin@acebank.com',
---        '$2a$12$LJ3m4ys3PQFXqJZ8gY8OPOkVbKjHiXsNXpJjLYMh0qy8.XkKVvKCe',
---        'ADMIN', '+919999999999', 'ACTIVE'
--- WHERE NOT EXISTS (SELECT 1 FROM USERS WHERE EMAIL = 'admin@acebank.com');
---
--- INSERT INTO ACCOUNTS (ACCOUNT_NO, USER_ID, ACCOUNT_TYPE, BALANCE, STATUS)
--- SELECT 10000001, (SELECT USER_ID FROM USERS WHERE EMAIL = 'admin@acebank.com'), 'SAVINGS', 1000000.00, 'ACTIVE'
--- WHERE NOT EXISTS (SELECT 1 FROM ACCOUNTS WHERE ACCOUNT_NO = 10000001);
+INSERT INTO USERS (FIRST_NAME, LAST_NAME, AADHAAR_NO, EMAIL, PASSWORD_HASH, ROLE, PHONE, STATUS)
+SELECT 'Admin', 'AceBank', '000000000000', 'admin@acebank.com',
+       '$2a$12$5VtGBJuV.BF.oSdgdc9Aweu/HfX0SKHYnIfUk5ayIxRqQ77cqzeEe',
+       'ADMIN', '+919999999999', 'ACTIVE'
+WHERE NOT EXISTS (SELECT 1 FROM USERS WHERE EMAIL = 'admin@acebank.com');
+
+INSERT INTO ACCOUNTS (ACCOUNT_NO, USER_ID, ACCOUNT_TYPE, BALANCE, STATUS)
+SELECT 10000001, (SELECT USER_ID FROM USERS WHERE EMAIL = 'admin@acebank.com'), 'SAVINGS', 1000000.00, 'ACTIVE'
+WHERE NOT EXISTS (SELECT 1 FROM ACCOUNTS WHERE ACCOUNT_NO = 10000001);
