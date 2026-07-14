@@ -1,0 +1,22 @@
+# Render Blueprint — deploy with "New +" -> "Blueprint" pointing at this repo.
+# https://render.com/docs/blueprint-spec
+#
+# Render has no managed MySQL, so the database is external (Aiven, Railway,
+# PlanetScale, etc.). Set the three DB_* variables in the Render dashboard;
+# they are intentionally sync:false so no secret ever lives in git.
+services:
+  - type: web
+    name: acebank
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /health
+    envVars:
+      - key: DB_URL
+        sync: false   # e.g. jdbc:mysql://HOST:PORT/DBNAME?sslMode=REQUIRED&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      - key: DB_USER
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: DB_DRIVER
+        value: com.mysql.cj.jdbc.Driver

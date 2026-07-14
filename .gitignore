@@ -40,8 +40,13 @@ build/
 .DS_Store
 
 ### Sensitive Application Config ###
+src/main/resources/application.properties
 src/main/resources/application-*.properties
-!src/main/resources/application-*.properties.template
+!src/main/resources/*.template
 
 ### Local Runtime / IDE Artifacts ###
 .smarttomcat/
+### Local scratch / preview artifacts ###
+cj.txt
+dash.html
+tr.html

@@ -1,0 +1,35 @@
+# AceBank — full stack in one command:  docker compose up --build
+# App:   http://localhost:8080/
+# MySQL: localhost:3307 (host) -> 3306 (container)
+services:
+  db:
+    image: mysql:8.4
+    environment:
+      MYSQL_ROOT_PASSWORD: acebank_root
+      MYSQL_DATABASE: acebank
+    ports:
+      - "3307:3306"
+    volumes:
+      - db-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-pacebank_root"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  app:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      # Consumed by AppConfig (env vars override application.properties)
+      DB_URL: "jdbc:mysql://db:3306/acebank?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC"
+      DB_USER: root
+      DB_PASSWORD: acebank_root
+      DB_DRIVER: com.mysql.cj.jdbc.Driver
+    ports:
+      - "8080:8080"
+
+volumes:
+  db-data:

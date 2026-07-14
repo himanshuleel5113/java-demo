@@ -1,73 +1,25 @@
-/**
- * AceBank Global JavaScript Module
- */
+/* AceBank — shared front-end helpers (no external dependencies) */
+(function () {
+  "use strict";
 
-document.addEventListener('DOMContentLoaded', () => {
-    // Apply page transition animation
-    const mainContent = document.querySelector('.main-content') || document.querySelector('main');
-    if (mainContent) {
-        mainContent.classList.add('page-enter');
+  document.addEventListener("click", function (e) {
+    // Public/landing mobile nav
+    if (e.target.closest(".nav-toggle")) {
+      var links = document.querySelector(".nav-links");
+      if (links) links.style.display = links.style.display === "flex" ? "" : "flex";
     }
-});
-
-// Utility functions that can be used globally
-const AceBank = {
-    // Format currency to INR
-    formatCurrency: function(amount) {
-        return new Intl.NumberFormat('en-IN', {
-            style: 'currency',
-            currency: 'INR'
-        }).format(amount);
-    },
-    
-    // Validate email
-    isValidEmail: function(email) {
-        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return re.test(email);
-    },
-    
-    // Copy to clipboard with toast notification
-    copyToClipboard: function(text, successMessage = 'Copied to clipboard!') {
-        navigator.clipboard.writeText(text).then(() => {
-            this.showToast(successMessage, 'success');
-        }).catch(err => {
-            console.error('Could not copy text: ', err);
-            this.showToast('Failed to copy', 'error');
-        });
-    },
-    
-    // Simple toast notification system
-    showToast: function(message, type = 'info') {
-        const toast = document.createElement('div');
-        
-        // Base styles
-        toast.className = 'fixed bottom-4 right-4 px-6 py-3 rounded-xl shadow-lg transform transition-all duration-300 translate-y-10 opacity-0 z-50 flex items-center gap-3 glass-panel';
-        
-        // Icon based on type
-        let icon = '<i class="fas fa-info-circle text-blue-500"></i>';
-        if (type === 'success') icon = '<i class="fas fa-check-circle text-green-500"></i>';
-        if (type === 'error') icon = '<i class="fas fa-exclamation-circle text-red-500"></i>';
-        
-        toast.innerHTML = `
-            ${icon}
-            <span class="font-medium text-sm">${message}</span>
-        `;
-        
-        document.body.appendChild(toast);
-        
-        // Animate in
-        setTimeout(() => {
-            toast.classList.remove('translate-y-10', 'opacity-0');
-            toast.classList.add('translate-y-0', 'opacity-100');
-        }, 10);
-        
-        // Animate out and remove
-        setTimeout(() => {
-            toast.classList.remove('translate-y-0', 'opacity-100');
-            toast.classList.add('translate-y-10', 'opacity-0');
-            setTimeout(() => toast.remove(), 300);
-        }, 3000);
+    // App sidebar (authenticated pages)
+    if (e.target.closest("#navToggle")) {
+      var app = document.getElementById("app");
+      if (app) app.classList.toggle("nav-open");
     }
-};
+  });
 
-window.AceBank = AceBank;
+  // Password show/hide toggles: any [data-toggle-password] targets the previous input
+  document.addEventListener("click", function (e) {
+    var btn = e.target.closest("[data-toggle-password]");
+    if (!btn) return;
+    var input = btn.parentNode.querySelector("input");
+    if (input) input.type = input.type === "password" ? "text" : "password";
+  });
+})();
